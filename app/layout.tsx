@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono, Lexend } from "next/font/google"
+import { Geist_Mono, Lexend } from "next/font/google"
 
 import "@/styles/globals.css"
 
+import { site } from "@/config/site"
+import { cx } from "@/lib/style-utils"
 import { LayoutProps } from "@/lib/types"
-import { cx } from "@/lib/utils"
+import { ThemeProvider } from "@/components/ui/theme-provider"
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -24,7 +26,17 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang="en" className="creightit" data-accent-color="plum" data-gray-color="slate">
-      <body className={cx(geistMono.variable, lexendSans.variable, "antialiased")}>{children}</body>
+      <body className={cx(geistMono.variable, lexendSans.variable, "antialiased")}>
+        <ThemeProvider
+          storageKey={site.STORAGE_KEY}
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
