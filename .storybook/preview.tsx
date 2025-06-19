@@ -1,6 +1,7 @@
 import { withThemeByClassName } from "@storybook/addon-themes"
 import { Decorator, Preview } from "@storybook/nextjs-vite"
-import { DecoratorFunction } from "storybook/actions"
+
+import "@/styles/globals.css"
 
 const preview: Preview = {
   parameters: {
