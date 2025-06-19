@@ -1,14 +1,20 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "./tokens/colors/color-tokens.css";
+@import "./tokens/colors/theme-vars.css";
+@import "./tokens/colors/theme-utils.css";
+
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@utility debug-* {
+  outline: var(--color-debug) solid --value(integer) px;
 }
 
 @theme {
+  --font-sans: var(--font-lexend-sans);
+  --font-mono: var(--font-geist-mono);
+  /* Interactions/Animations */
   --animate-hide: hide 150ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-slide-down-and-fade: slideDownAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-slide-left-and-fade: slideLeftAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -123,22 +129,4 @@
       transform: translateX(100%);
     }
   }
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
