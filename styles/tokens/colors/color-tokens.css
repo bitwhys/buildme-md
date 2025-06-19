@@ -1,0 +1,14 @@
+/* Since the order matters (?) first import the colors we want to use
+  then import the theme variables.
+*/
+@import "./palette/amber.css";
+@import "./palette/brown.css";
+@import "./palette/crimson.css";
+@import "./palette/indigo.css";
+@import "./palette/mint.css";
+@import "./palette/orange.css";
+@import "./palette/plum.css";
+@import "./palette/red.css";
+@import "./palette/sky.css";
+@import "./palette/teal.css";
+@import "./palette/theme-vars.css"; /* Includes imports for black, white alpha */
