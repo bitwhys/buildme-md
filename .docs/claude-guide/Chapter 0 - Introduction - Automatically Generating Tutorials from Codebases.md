@@ -39,6 +39,7 @@ After a few minutes (depending on the codebase size), you'll have a complete tut
 - Links to detailed markdown files explaining each component
 
 Each generated chapter:
+
 - Explains what problem a specific component solves
 - Provides beginner-friendly explanations with analogies
 - Shows relevant code snippets with commentary

@@ -98,6 +98,7 @@ Let's break down what's happening here:
 ### 1. Importing the Necessary Components
 
 The first part of the file imports two essential things:
+
 - The `Flow` class from `pocketflow`, which is the framework for creating our pipeline
 - All our specialized node classes from `nodes.py`, where each node's logic is defined
 
@@ -160,6 +161,7 @@ Think of the `shared` dictionary like a conveyor belt in our assembly line. Each
 Here's a simplified example of how the `shared` dictionary evolves as it passes through our pipeline:
 
 1. **Initial state** (from CLI):
+
    ```python
    shared = {
        "repo_url": "https://github.com/example/repo",
@@ -173,6 +175,7 @@ Here's a simplified example of how the `shared` dictionary evolves as it passes 
    ```
 
 2. **After FetchRepo**:
+
    ```python
    shared = {
        # ... original configuration ...
@@ -202,6 +205,7 @@ Here's a simplified example of how the `shared` dictionary evolves as it passes 
 And so on, with each node adding its results to the `shared` dictionary until we have our complete tutorial.
 
 This approach has several advantages:
+
 - Each node can focus solely on its specific task
 - Nodes are decoupled from each other, making the system more maintainable
 - The `shared` dictionary provides a centralized state that all nodes can access
@@ -226,19 +230,19 @@ class FetchRepo(Node):
         repo_url = shared.get("repo_url")
         local_dir = shared.get("local_dir")
         # ... get other configuration ...
-        
+
         # Return what exec will need
         return {
             "repo_url": repo_url,
             "local_dir": local_dir,
             # ... other config ...
         }
-        
+
     def exec(self, prep_res):
         # Get the data prepared by prep
         repo_url = prep_res["repo_url"]
         local_dir = prep_res["local_dir"]
-        
+
         # Do the main work (fetch files)
         if repo_url:
             # Fetch from GitHub
@@ -246,13 +250,13 @@ class FetchRepo(Node):
         else:
             # Fetch from local directory
             result = crawl_local_files(directory=local_dir, ...)
-            
+
         # Convert result to the format we need
         files_list = list(result.get("files", {}).items())
-        
+
         # Return the result for post to use
         return files_list
-        
+
     def post(self, shared, prep_res, exec_res):
         # Store our result in shared for the next node
         shared["files"] = exec_res
@@ -265,6 +269,7 @@ This separation of concerns within each node helps make the code more maintainab
 The Tutorial Generation Pipeline is the orchestration engine of our codebase tutorial generator. By breaking down the complex process into specialized steps and connecting them in sequence, it transforms your initial instructions (via the CLI) into a complete, well-structured tutorial.
 
 The pipeline's design follows several important software engineering principles:
+
 - **Single Responsibility Principle**: Each node does one thing and does it well
 - **Separation of Concerns**: The logic for different tasks is cleanly separated
 - **Data Flow Architecture**: Information flows clearly from one step to the next
@@ -303,6 +308,7 @@ shared = {
 ```
 
 **Questions**:
+
 1. What node added the content to `shared["files"]`?
 2. What node added the content to `shared["abstractions"]`?
 3. What node added the content to `shared["relationships"]`?
@@ -339,32 +345,32 @@ class SpellCheckTutorial(Node):
         # We need to read the generated chapters to spell check them
         chapters_content = shared["chapters"]
         language = shared.get("language", "english")
-        
+
         return {
             "chapters_content": chapters_content,
             "language": language
         }
-    
+
     def exec(self, prep_res):
         chapters_content = prep_res["chapters_content"]
         language = prep_res["language"]
-        
+
         # Initialize a list to store corrected chapters
         corrected_chapters = []
-        
+
         # Process each chapter
         for chapter in chapters_content:
             # In a real implementation, this would use a spell checking library
             # For this example, we'll just simulate the process
             corrected_chapter = self._spell_check_text(chapter, language)
             corrected_chapters.append(corrected_chapter)
-        
+
         return corrected_chapters
-    
+
     def post(self, shared, prep_res, exec_res):
         # Replace the chapters with our spell-checked versions
         shared["chapters"] = exec_res
-    
+
     def _spell_check_text(self, text, language):
         # Dummy implementation - in reality, this would use a spell checking library
         print(f"Spell checking chapter in {language}...")
@@ -393,7 +399,7 @@ def create_tutorial_flow():
 
     # Create the flow
     tutorial_flow = Flow(start=fetch_repo)
-    
+
     return tutorial_flow
 ```
 
@@ -412,10 +418,12 @@ Error: LLM Output is not a list
 Looking at the logs, you find that the Large Language Model (LLM) returned a malformed response that couldn't be parsed as a YAML list of abstractions.
 
 **Task**: As a developer maintaining this system, what would you do to:
+
 1. Implement better error handling for this specific case
 2. Make the system more robust against similar failures in the future
 
 Think about:
+
 - How could the node validate the LLM's output better?
 - What fallback mechanisms could you implement?
 - How would you improve the prompt to the LLM to get more reliable responses?
@@ -426,10 +434,11 @@ Think about:
 Here's how we could improve the system:
 
 1. **Better Error Handling**:
-   ```python
+
+   ````python
    def exec(self, prep_res):
        # ... existing code ...
-       
+
        try:
            yaml_str = response.strip().split("```yaml")[1].split("```")[0].strip()
            abstractions = yaml.safe_load(yaml_str)
@@ -437,13 +446,13 @@ Here's how we could improve the system:
            # More specific error handling for YAML parsing issues
            print(f"Failed to parse LLM response as YAML: {e}")
            print(f"Raw response was: {response[:100]}...")  # Log part of the raw response
-           
+
            # Attempt recovery - try an alternative parsing approach
            abstractions = self._attempt_alternative_parsing(response)
-           
+
            if not abstractions:
                raise ValueError(f"Could not parse LLM output as abstractions list: {e}")
-    
+
     def _attempt_alternative_parsing(self, response):
         """Fallback method to try alternative parsing approaches"""
         # Try to extract any JSON-like structure
@@ -456,28 +465,29 @@ Here's how we could improve the system:
                 return json.loads(match.group(0))
         except:
             pass
-            
+
         # If all else fails, return None
         return None
-   ```
+   ````
 
 2. **System Robustness Improvements**:
-   
+
    a. **Improve the prompt**:
-   ```python
+
+   ````python
    prompt = f"""
    For the project `{project_name}`:
-   
+
    Codebase Context:
    {context}
-   
+
    Analyze the codebase context and identify the top 5-{max_abstraction_num} core most important abstractions.
-   
+
    CRITICAL: Your response MUST follow this EXACT format - a YAML list where each item has exactly these three fields:
    - name: A concise name for the abstraction
    - description: A beginner-friendly explanation of what it is
    - file_indices: A list of relevant file indices as integers
-   
+
    Example output format:
    ```yaml
    - name: Query Processing
@@ -489,12 +499,13 @@ Here's how we could improve the system:
      description: Another core concept, similar to a blueprint for objects.
      file_indices:
        - 5
-   ```
-   
-   YOUR RESPONSE MUST START WITH ```yaml AND END WITH ``` WITH NO OTHER TEXT BEFORE OR AFTER.
+   ````
+
+   YOUR RESPONSE MUST START WITH `yaml AND END WITH ` WITH NO OTHER TEXT BEFORE OR AFTER.
    """
-   ```
-   
+
+   ````
+
    b. **Implement a retry mechanism with prompt refinement**:
    ```python
    # In the Node base class or a utility function
@@ -503,38 +514,39 @@ Here's how we could improve the system:
        for attempt in range(max_retries):
            try:
                response = call_llm(prompt, use_cache=use_cache and attempt == 0)
-               
+
                # Try to parse - if this succeeds, return the result
                yaml_str = response.strip().split("```yaml")[1].split("```")[0].strip()
                result = yaml.safe_load(yaml_str)
-               
+
                # Validate basic structure
                if isinstance(result, list) and all(isinstance(item, dict) for item in result):
                    return result
-                   
+
            except Exception as e:
                print(f"Attempt {attempt+1} failed: {e}")
-               
+
                # On failure, refine the prompt to be more explicit
                if attempt < max_retries - 1:
                    prompt += "\n\nYOUR PREVIOUS RESPONSE WAS INVALID. Please STRICTLY follow the YAML format shown above with EXACTLY the fields requested. This is critical."
-       
+
        # If we get here, all retries failed
        raise ValueError(f"Failed to get valid response after {max_retries} attempts")
-   ```
-   
+   ````
+
    c. **Add a simple fallback mode**:
+
    ```python
    def exec(self, prep_res):
        # ... try normal processing first ...
-       
+
        try:
            # Normal processing path
            # ...
        except Exception as e:
            print(f"Error in normal processing: {e}")
            print("Attempting fallback mode with simplified prompt...")
-           
+
            # Fallback to a much simpler approach - just extract file names as abstractions
            fallback_abstractions = []
            for i, (path, _) in enumerate(shared["files"]):
@@ -544,12 +556,13 @@ Here's how we could improve the system:
                    "description": f"Component defined in {path}",
                    "files": [i]
                })
-           
+
            print(f"Generated {len(fallback_abstractions)} fallback abstractions")
            return fallback_abstractions
    ```
 
 These improvements would make the system much more robust against LLM output parsing issues, with several layers of recovery mechanisms.
+
 </details>
 
 [Next Chapter: Shared Flow State](03_shared_flow_state_.md)

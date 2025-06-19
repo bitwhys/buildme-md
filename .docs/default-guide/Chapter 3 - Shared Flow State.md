@@ -1,18 +1,19 @@
 Welcome back! In [Chapter 1: Command-Line Interface](01_command_line_interface_.md), you learned how to tell our tutorial generator what code to analyze and where to save the output. In [Chapter 2: Tutorial Generation Pipeline](02_tutorial_generation_pipeline_.md), we saw how this project breaks down the complex task into a series of steps, or "nodes," that run in a specific order like an assembly line.
 
-But how do these different nodes, these specialized workers, share information? How does the node that fetches the files pass that list of files to the node that needs to read them? How does the node that identifies concepts tell the node that writes chapters *what* concepts to write about?
+But how do these different nodes, these specialized workers, share information? How does the node that fetches the files pass that list of files to the node that needs to read them? How does the node that identifies concepts tell the node that writes chapters _what_ concepts to write about?
 
 This is where the concept of **Shared Flow State**, managed by a central Python dictionary often referred to as `shared`, becomes absolutely crucial.
 
 ## What Problem Does Shared State Solve?
 
 Imagine that project folder analogy again. Each team member (Node) has a specific task.
-*   Person 1 fetches all the raw documents.
-*   Person 2 reads the documents and lists the main topics.
-*   Person 3 takes the list of topics and figures out how they relate.
-*   Person 4 orders the topics logically.
-*   Person 5 writes explanations for each topic, referencing the original documents and topic relationships.
-*   Person 6 puts everything together into a final report.
+
+- Person 1 fetches all the raw documents.
+- Person 2 reads the documents and lists the main topics.
+- Person 3 takes the list of topics and figures out how they relate.
+- Person 4 orders the topics logically.
+- Person 5 writes explanations for each topic, referencing the original documents and topic relationships.
+- Person 6 puts everything together into a final report.
 
 For this to work, Person 1 needs a place to put the documents where Person 2 can find them. Person 2 needs a place to put the topic list where Person 3 can find it, and so on. If they just worked in isolation without sharing, nothing would get done!
 
@@ -26,8 +27,8 @@ At its core, the `shared` dictionary is just a regular Python dictionary (`dict`
 
 Think of it like:
 
-*   **A Shared Whiteboard:** Everyone involved in the project can look at the whiteboard to see the latest information, and they can write their results onto it for others to see.
-*   **A Communal Backpack:** When the pipeline starts, the backpack is packed with initial instructions (from the CLI). As each node works, it might take things out, add new things (its results), and then zip it up for the next node to open.
+- **A Shared Whiteboard:** Everyone involved in the project can look at the whiteboard to see the latest information, and they can write their results onto it for others to see.
+- **A Communal Backpack:** When the pipeline starts, the backpack is packed with initial instructions (from the CLI). As each node works, it might take things out, add new things (its results), and then zip it up for the next node to open.
 
 In the context of PocketFlow (the library used by this project to build the pipeline), the `shared` dictionary is automatically created (or initialized with your starting data) when a Flow begins, and **the exact same dictionary object is passed from one node to the next** as the Flow progresses.
 
@@ -75,7 +76,8 @@ def main():
 
     # ... (access final results from shared, like shared["final_output_dir"]) ...
 ```
-*Explanation:* You provide inputs via the command line (`args`). `main.py` collects these inputs and puts them into a dictionary called `shared`. It also adds placeholder keys (`"files"`, `"abstractions"`, etc.) with initial empty values (like empty lists or dictionaries). This initial `shared` dictionary contains all the starting instructions for the pipeline.
+
+_Explanation:_ You provide inputs via the command line (`args`). `main.py` collects these inputs and puts them into a dictionary called `shared`. It also adds placeholder keys (`"files"`, `"abstractions"`, etc.) with initial empty values (like empty lists or dictionaries). This initial `shared` dictionary contains all the starting instructions for the pipeline.
 
 ### 2. Reading from `shared` (in `nodes.py`)
 
@@ -123,7 +125,8 @@ class IdentifyAbstractions(Node):
         )
     # ... exec and post methods follow ...
 ```
-*Explanation:* Notice how `FetchRepo.prep` reads the initial configuration like `repo_url` or `local_dir` that was put into `shared` by `main.py`. `IdentifyAbstractions.prep` then reads the `files` list that `FetchRepo` will put into `shared` later (in its `post` method), *and* also reads configuration like `project_name` and `language` that was there from the start. This shows how nodes depend on data added by previous nodes or the initial setup.
+
+_Explanation:_ Notice how `FetchRepo.prep` reads the initial configuration like `repo_url` or `local_dir` that was put into `shared` by `main.py`. `IdentifyAbstractions.prep` then reads the `files` list that `FetchRepo` will put into `shared` later (in its `post` method), _and_ also reads configuration like `project_name` and `language` that was there from the start. This shows how nodes depend on data added by previous nodes or the initial setup.
 
 ### 3. Writing to `shared` (in `nodes.py`)
 
@@ -138,7 +141,8 @@ class FetchRepo(Node):
         # exec_res contains the result of the exec method (the list of files)
         shared["files"] = exec_res # Write the list of files into shared
 ```
-*Explanation:* `FetchRepo` finishes fetching files and its `exec` method returns the list. The `post` method receives this result in `exec_res` and explicitly assigns it to the `"files"` key in the `shared` dictionary.
+
+_Explanation:_ `FetchRepo` finishes fetching files and its `exec` method returns the list. The `post` method receives this result in `exec_res` and explicitly assigns it to the `"files"` key in the `shared` dictionary.
 
 ```python
 # --- Simplified from nodes.py (IdentifyAbstractions) ---
@@ -150,13 +154,15 @@ class IdentifyAbstractions(Node):
         # exec_res is a list of {"name": str, "description": str, "files": [int]}
         shared["abstractions"] = exec_res # Write the list of abstractions into shared
 ```
-*Explanation:* `IdentifyAbstractions` gets the identified concepts from its `exec` method's result (`exec_res`) and stores this list in `shared` under the `"abstractions"` key.
+
+_Explanation:_ `IdentifyAbstractions` gets the identified concepts from its `exec` method's result (`exec_res`) and stores this list in `shared` under the `"abstractions"` key.
 
 This pattern repeats for every node:
-*   `AnalyzeRelationships.post` writes the project `"relationships"` (summary and details) into `shared`.
-*   `OrderChapters.post` writes the list of ordered chapter indices (`"chapter_order"`) into `shared`.
-*   `WriteChapters.post` writes the generated Markdown content for all chapters (`"chapters"`) into `shared`.
-*   `CombineTutorial.post` writes the final directory where the tutorial was saved (`"final_output_dir"`) into `shared`.
+
+- `AnalyzeRelationships.post` writes the project `"relationships"` (summary and details) into `shared`.
+- `OrderChapters.post` writes the list of ordered chapter indices (`"chapter_order"`) into `shared`.
+- `WriteChapters.post` writes the generated Markdown content for all chapters (`"chapters"`) into `shared`.
+- `CombineTutorial.post` writes the final directory where the tutorial was saved (`"final_output_dir"`) into `shared`.
 
 By the end of the pipeline, the `shared` dictionary is populated with all the results.
 
@@ -176,11 +182,12 @@ if final_dir:
 else:
     print("\nTutorial generation finished, but output directory not recorded.")
 ```
-*Explanation:* The original `shared` dictionary object has been modified in place by the nodes during the `run` call. Now, `main.py` can simply look up the value associated with `"final_output_dir"` to know where the tutorial was saved.
+
+_Explanation:_ The original `shared` dictionary object has been modified in place by the nodes during the `run` call. Now, `main.py` can simply look up the value associated with `"final_output_dir"` to know where the tutorial was saved.
 
 ## How `shared` Travels Through the Pipeline
 
-The `pocketflow` library handles the mechanism of passing the `shared` dictionary. When you define the sequence using `>>` (like `NodeA >> NodeB >> NodeC`), `pocketflow` ensures that when `NodeA` finishes, it passes the current `shared` dictionary to `NodeB`, and when `NodeB` finishes, it passes the *same* dictionary (potentially modified by NodeB) to `NodeC`, and so on.
+The `pocketflow` library handles the mechanism of passing the `shared` dictionary. When you define the sequence using `>>` (like `NodeA >> NodeB >> NodeC`), `pocketflow` ensures that when `NodeA` finishes, it passes the current `shared` dictionary to `NodeB`, and when `NodeB` finishes, it passes the _same_ dictionary (potentially modified by NodeB) to `NodeC`, and so on.
 
 Here's a simplified view of how the `shared` dictionary moves through the main steps of our pipeline:
 
@@ -211,14 +218,15 @@ sequenceDiagram
     CombineTutNode->>SharedDict: Writes final output path
     SharedDict-->>End: Final data available
 ```
+
 This diagram visually shows how the `shared` dictionary is the central conduit, receiving data from one node and making it available to the next.
 
 ## Key Takeaways about `shared`
 
-*   **It's the Central Hub:** All data, from initial user input to final generated content, lives in the `shared` dictionary during a pipeline run.
-*   **It's How Nodes Communicate:** Nodes don't directly call each other or pass results like function arguments (except for the specific `prep`/`exec`/`post` flow within a single node's execution cycle). They communicate by reading from and writing to `shared`.
-*   **It's Persistent Per Run:** Once a `shared` dictionary is created for a `flow.run()` call, it stays the same object, accumulating changes as it passes through the nodes.
-*   **It's Simple Python:** Because it's just a dictionary, you use standard Python dictionary operations (`shared['key'] = value`, `value = shared['key']`, `shared.get('key', default)`) to interact with it.
+- **It's the Central Hub:** All data, from initial user input to final generated content, lives in the `shared` dictionary during a pipeline run.
+- **It's How Nodes Communicate:** Nodes don't directly call each other or pass results like function arguments (except for the specific `prep`/`exec`/`post` flow within a single node's execution cycle). They communicate by reading from and writing to `shared`.
+- **It's Persistent Per Run:** Once a `shared` dictionary is created for a `flow.run()` call, it stays the same object, accumulating changes as it passes through the nodes.
+- **It's Simple Python:** Because it's just a dictionary, you use standard Python dictionary operations (`shared['key'] = value`, `value = shared['key']`, `shared.get('key', default)`) to interact with it.
 
 Understanding the `shared` dictionary is key to understanding how PocketFlow applications, including our tutorial generator, manage state and pass information between different processing steps.
 
@@ -229,4 +237,3 @@ Now that we know how the data flows and is stored, let's look at the very first 
 ---
 
 <sub><sup>Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge).</sup></sub> <sub><sup>**References**: [[1]](https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge/blob/86b22475977019d4147523aa0a1c8049625db5e0/docs/PocketFlow/01_shared_state___shared__dictionary__.md), [[2]](https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge/blob/86b22475977019d4147523aa0a1c8049625db5e0/flow.py), [[3]](https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge/blob/86b22475977019d4147523aa0a1c8049625db5e0/main.py), [[4]](https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge/blob/86b22475977019d4147523aa0a1c8049625db5e0/nodes.py)</sup></sub>
-

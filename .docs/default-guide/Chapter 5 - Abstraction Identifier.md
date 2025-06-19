@@ -1,18 +1,19 @@
 Welcome back to our journey through the PocketFlow-Tutorial-Codebase-Knowledge project!
 
 In our previous chapters, we've set the stage:
-*   [Chapter 1: Command-Line Interface](01_command_line_interface_.md) showed us how to tell the program which codebase to analyze.
-*   [Chapter 2: Tutorial Generation Pipeline](02_tutorial_generation_pipeline_.md) introduced the overall sequence of steps the project takes.
-*   [Chapter 3: Shared Flow State](03_shared_flow_state_.md) explained the central `shared` dictionary that carries data between steps.
-*   [Chapter 4: Codebase Crawler](04_codebase_crawler_.md) detailed how the project gathers all the relevant code files from your specified source and puts them into that `shared` dictionary under the `"files"` key.
 
-Now we have the raw material – the list of files and their content – sitting in our `shared` dictionary. But a pile of files isn't a tutorial! The next crucial step is to make sense of all that code and identify what the *main things* are that a beginner needs to understand.
+- [Chapter 1: Command-Line Interface](01_command_line_interface_.md) showed us how to tell the program which codebase to analyze.
+- [Chapter 2: Tutorial Generation Pipeline](02_tutorial_generation_pipeline_.md) introduced the overall sequence of steps the project takes.
+- [Chapter 3: Shared Flow State](03_shared_flow_state_.md) explained the central `shared` dictionary that carries data between steps.
+- [Chapter 4: Codebase Crawler](04_codebase_crawler_.md) detailed how the project gathers all the relevant code files from your specified source and puts them into that `shared` dictionary under the `"files"` key.
+
+Now we have the raw material – the list of files and their content – sitting in our `shared` dictionary. But a pile of files isn't a tutorial! The next crucial step is to make sense of all that code and identify what the _main things_ are that a beginner needs to understand.
 
 This is the job of the **Abstraction Identifier**.
 
 ## What Problem Does the Abstraction Identifier Solve?
 
-Imagine you've just been given a massive stack of building blueprints for a complex structure. It's thousands of pages, full of details about every pipe, wire, and nail. If someone asked you, "So, what is this building *about*?", you wouldn't start listing individual nails. You'd point out the foundation, the main support columns, the electrical system, the plumbing system, maybe the elevator shafts. These are the **core concepts** or **abstractions** of the building.
+Imagine you've just been given a massive stack of building blueprints for a complex structure. It's thousands of pages, full of details about every pipe, wire, and nail. If someone asked you, "So, what is this building _about_?", you wouldn't start listing individual nails. You'd point out the foundation, the main support columns, the electrical system, the plumbing system, maybe the elevator shafts. These are the **core concepts** or **abstractions** of the building.
 
 Similarly, a codebase, especially a large one, is full of countless lines of code spread across many files. It defines classes, functions, modules, configurations, and data structures. To understand the project, you don't need to know every single line of code immediately. You need to know the main components, the big ideas, the "building blocks" that make the project work.
 
@@ -42,9 +43,10 @@ Let's dive into the `IdentifyAbstractions` node and see how it accomplishes this
 Like other nodes, `IdentifyAbstractions` has `prep`, `exec`, and `post` methods:
 
 1.  **`prep(self, shared)`:**
-    *   **Reads Inputs:** This method reads the necessary data and configuration from the `shared` dictionary. The most important input here is the list of files collected by the previous node: `shared["files"]`. It also reads configuration like the `project_name`, desired `language` for the output, whether to `use_cache` for the LLM call, and the `max_abstraction_num` (the maximum number of concepts to identify, which defaults to 10 but can be set via the CLI).
-    *   **Prepares LLM Context:** It takes the content of the files from `shared["files"]` and formats them into a single large text string that can be sent to the LLM. It adds clear markers like `--- File Index X: path/to/file ---` before the content of each file so the LLM knows which content comes from which file and can reference files by their index. It also creates a simple list of file indices and paths to give the LLM for easy reference.
-    *   **Returns Data for `exec`:** It collects all the prepared context and configuration into a tuple that is returned and passed to the `exec` method.
+
+    - **Reads Inputs:** This method reads the necessary data and configuration from the `shared` dictionary. The most important input here is the list of files collected by the previous node: `shared["files"]`. It also reads configuration like the `project_name`, desired `language` for the output, whether to `use_cache` for the LLM call, and the `max_abstraction_num` (the maximum number of concepts to identify, which defaults to 10 but can be set via the CLI).
+    - **Prepares LLM Context:** It takes the content of the files from `shared["files"]` and formats them into a single large text string that can be sent to the LLM. It adds clear markers like `--- File Index X: path/to/file ---` before the content of each file so the LLM knows which content comes from which file and can reference files by their index. It also creates a simple list of file indices and paths to give the LLM for easy reference.
+    - **Returns Data for `exec`:** It collects all the prepared context and configuration into a tuple that is returned and passed to the `exec` method.
 
     ```python
     # Simplified from nodes.py (IdentifyAbstractions)
@@ -83,15 +85,17 @@ Like other nodes, `IdentifyAbstractions` has `prep`, `exec`, and `post` methods:
             )
         # ... exec and post methods ...
     ```
-    *Explanation:* The `prep` method is like the architect gathering *all* the blueprints (from `shared["files"]`) and organizing them neatly with labels (like `--- File Index X: ... ---`) and an index ( `file_listing_for_prompt`) before starting the analysis. It also makes sure to note the project name and desired output language.
+
+    _Explanation:_ The `prep` method is like the architect gathering _all_ the blueprints (from `shared["files"]`) and organizing them neatly with labels (like `--- File Index X: ... ---`) and an index ( `file_listing_for_prompt`) before starting the analysis. It also makes sure to note the project name and desired output language.
 
 2.  **`exec(self, prep_res)`:**
-    *   **Constructs the Prompt:** This is where the core instruction for the AI is built. It uses the context prepared in `prep` (the file contents and file list) and asks the LLM to identify the top 5 to `max_abstraction_num` concepts. It specifies the required output format: a YAML list of dictionaries, each containing a `name`, `description`, and a list of `file_indices` (referencing the file list provided). It also includes instructions for the language if it's not English.
-    *   **Calls the LLM:** It uses the `call_llm` utility function ([Chapter 10](10_llm_caller_utility_.md)) to send the prompt to the AI model and get a response.
-    *   **Parses and Validates Output:** The LLM's response is expected to be a YAML string. The `exec` method parses this string using a YAML library (`yaml.safe_load`). It then performs validation checks to ensure the output is in the correct format (a list of dictionaries with the required keys and correct data types). It specifically validates that the referenced `file_indices` are valid indices within the original list of files. If validation fails, it raises an error, which `pocketflow` can use to retry the node.
-    *   **Returns Validated Data:** If validation passes, the method returns the structured list of identified abstractions.
 
-    ```python
+    - **Constructs the Prompt:** This is where the core instruction for the AI is built. It uses the context prepared in `prep` (the file contents and file list) and asks the LLM to identify the top 5 to `max_abstraction_num` concepts. It specifies the required output format: a YAML list of dictionaries, each containing a `name`, `description`, and a list of `file_indices` (referencing the file list provided). It also includes instructions for the language if it's not English.
+    - **Calls the LLM:** It uses the `call_llm` utility function ([Chapter 10](10_llm_caller_utility_.md)) to send the prompt to the AI model and get a response.
+    - **Parses and Validates Output:** The LLM's response is expected to be a YAML string. The `exec` method parses this string using a YAML library (`yaml.safe_load`). It then performs validation checks to ensure the output is in the correct format (a list of dictionaries with the required keys and correct data types). It specifically validates that the referenced `file_indices` are valid indices within the original list of files. If validation fails, it raises an error, which `pocketflow` can use to retry the node.
+    - **Returns Validated Data:** If validation passes, the method returns the structured list of identified abstractions.
+
+    ````python
     # Simplified from nodes.py (IdentifyAbstractions)
     # ... prep method ...
     def exec(self, prep_res):
@@ -136,11 +140,13 @@ Like other nodes, `IdentifyAbstractions` has `prep`, `exec`, and `post` methods:
         print(f"Identified {len(validated_abstractions)} abstractions.")
         return validated_abstractions # Return the structured list
     # ... post method ...
-    ```
-    *Explanation:* The `exec` method is the core AI analysis step. It gives the organized blueprints and index (`context`, `file_listing_for_prompt`) to the AI ("the expert architect"), asks specific questions about the core components, and expects the answers back in a structured format (YAML). It then meticulously checks the answers to make sure they make sense and follow the rules.
+    ````
+
+    _Explanation:_ The `exec` method is the core AI analysis step. It gives the organized blueprints and index (`context`, `file_listing_for_prompt`) to the AI ("the expert architect"), asks specific questions about the core components, and expects the answers back in a structured format (YAML). It then meticulously checks the answers to make sure they make sense and follow the rules.
 
 3.  **`post(self, shared, prep_res, exec_res)`:**
-    *   **Writes Output to `shared`:** The validated list of abstractions returned by the `exec` method (`exec_res`) is now the output of this node. The `post` method takes this list and stores it in the `shared` dictionary under the key `"abstractions"`. This makes the list of identified concepts available for all subsequent nodes in the pipeline, like the one that will analyze relationships between them.
+
+    - **Writes Output to `shared`:** The validated list of abstractions returned by the `exec` method (`exec_res`) is now the output of this node. The `post` method takes this list and stores it in the `shared` dictionary under the key `"abstractions"`. This makes the list of identified concepts available for all subsequent nodes in the pipeline, like the one that will analyze relationships between them.
 
     ```python
     # Simplified from nodes.py (IdentifyAbstractions)
@@ -168,7 +174,8 @@ Like other nodes, `IdentifyAbstractions` has `prep`, `exec`, and `post` methods:
         #    # ... etc.
         # }
     ```
-    *Explanation:* The `post` method is the architect writing down the list of identified core structural elements ("Foundation", "Main Support System", etc.) on the central project whiteboard (the `shared` dictionary) under the label "Key Concepts". Now everyone working on the project can see and use this list.
+
+    _Explanation:_ The `post` method is the architect writing down the list of identified core structural elements ("Foundation", "Main Support System", etc.) on the central project whiteboard (the `shared` dictionary) under the label "Key Concepts". Now everyone working on the project can see and use this list.
 
 Here's a sequence diagram illustrating the `IdentifyAbstractions` process and its interaction with `shared` and the LLM:
 
@@ -199,18 +206,19 @@ This diagram shows `IdentifyAbstractions` taking the files from `shared`, proces
 
 We can summarize the `IdentifyAbstractions` node's interaction with the `shared` dictionary like this:
 
-| What `IdentifyAbstractions` Reads from `shared` (Inputs) | What `IdentifyAbstractions` Writes to `shared` (Output) |
-| :------------------------------------------------------- | :------------------------------------------------------ |
+| What `IdentifyAbstractions` Reads from `shared` (Inputs)   | What `IdentifyAbstractions` Writes to `shared` (Output) |
+| :--------------------------------------------------------- | :------------------------------------------------------ |
 | `files` (list of `(path: string, content: string)` tuples) | `abstractions` (list of dictionaries)                   |
-| `project_name` (string)                                  |                                                         |
-| `language` (string)                                      |                                                         |
-| `use_cache` (boolean)                                    |                                                         |
-| `max_abstraction_num` (integer)                          |                                                         |
+| `project_name` (string)                                    |                                                         |
+| `language` (string)                                        |                                                         |
+| `use_cache` (boolean)                                      |                                                         |
+| `max_abstraction_num` (integer)                            |                                                         |
 
 The primary output, stored under the `"abstractions"` key, is a list. Each item in the list is a dictionary representing a core concept, typically containing:
-*   `name`: The name of the concept (e.g., "Query Processor").
-*   `description`: A beginner-friendly explanation.
-*   `files`: A list of integer indices corresponding to the relevant files in the original `shared["files"]` list.
+
+- `name`: The name of the concept (e.g., "Query Processor").
+- `description`: A beginner-friendly explanation.
+- `files`: A list of integer indices corresponding to the relevant files in the original `shared["files"]` list.
 
 This structured list of key concepts is the valuable information produced by this step, and it's now ready for the next node in the pipeline to use.
 

@@ -99,7 +99,7 @@ Next, the code collects the arguments the user provided:
 
 ```python
     args = parser.parse_args()
-    
+
     # Get GitHub token from argument or environment variable if using repo
     github_token = None
     if args.repo:
@@ -122,17 +122,17 @@ Finally, the CLI prepares a dictionary that will travel through the entire pipel
         "project_name": args.name,  # Can be None, FetchRepo will derive it
         "github_token": github_token,
         "output_dir": args.output,
-        
+
         # Add include/exclude patterns and max file size
         "include_patterns": set(args.include) if args.include else DEFAULT_INCLUDE_PATTERNS,
         "exclude_patterns": set(args.exclude) if args.exclude else DEFAULT_EXCLUDE_PATTERNS,
         "max_file_size": args.max_size,
-        
+
         # Add language and other configuration
         "language": args.language,
         "use_cache": not args.no_cache,
         "max_abstraction_num": args.max_abstractions,
-        
+
         # Placeholders for outputs (will be filled by pipeline nodes)
         "files": [],
         "abstractions": [],
@@ -157,7 +157,7 @@ After preparing the `shared` dictionary, the CLI's final job is to create and st
 ```python
     # Create the flow instance
     tutorial_flow = create_tutorial_flow()
-    
+
     # Run the flow with the shared dictionary
     tutorial_flow.run(shared)
 ```
@@ -175,7 +175,7 @@ sequenceDiagram
     participant ArgumentParser
     participant SharedDict
     participant Pipeline
-    
+
     User->>main.py: python main.py --repo ... --output ...
     main.py->>ArgumentParser: Create parser with argument definitions
     main.py->>ArgumentParser: Parse user's command

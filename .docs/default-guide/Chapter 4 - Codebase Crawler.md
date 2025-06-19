@@ -2,18 +2,19 @@ Welcome back to the tutorial for PocketFlow-Tutorial-Codebase-Knowledge!
 
 In [Chapter 1: Command-Line Interface](01_command_line_interface_.md), we learned how to give the program instructions like where to find your code. [Chapter 2: Tutorial Generation Pipeline](02_tutorial_generation_pipeline_.md) showed us the overall assembly line of steps the program takes. And [Chapter 3: Shared Flow State](03_shared_flow_state_.md) explained the central `shared` dictionary that carries all the data throughout this pipeline.
 
-Now, let's look at the *very first* worker on that assembly line – the **Codebase Crawler**.
+Now, let's look at the _very first_ worker on that assembly line – the **Codebase Crawler**.
 
 ## What Problem Does the Codebase Crawler Solve?
 
 Before our tutorial generator can analyze your code, figure out its concepts, and write chapters, it needs one fundamental thing: **the code itself!**
 
 Your project's source code isn't always neatly packaged in one place. It could be:
-*   Hosted remotely on a platform like GitHub.
-*   Sitting in a folder on your local computer.
-*   Spread across many files and subdirectories.
-*   Include various types of files (code, tests, documentation, build scripts, images).
-*   Contain some files that are very large or perhaps contain sensitive data you don't want included.
+
+- Hosted remotely on a platform like GitHub.
+- Sitting in a folder on your local computer.
+- Spread across many files and subdirectories.
+- Include various types of files (code, tests, documentation, build scripts, images).
+- Contain some files that are very large or perhaps contain sensitive data you don't want included.
 
 The rest of the pipeline can't do its job until it has a list of relevant code files and their contents. The Codebase Crawler is the component responsible for solving this initial problem: **finding and collecting the raw source code files based on your instructions.**
 
@@ -40,15 +41,16 @@ Let's see how the `FetchRepo` node uses the `shared` dictionary ([Chapter 3](03_
 Like all nodes in PocketFlow, `FetchRepo` has `prep`, `exec`, and `post` methods:
 
 1.  **`prep(self, shared)`:**
-    *   **Reads Inputs:** This method reads the necessary configuration from the `shared` dictionary. This includes:
-        *   `repo_url`: The GitHub URL (if provided).
-        *   `local_dir`: The local directory path (if provided).
-        *   `include_patterns`: The list of file patterns to include.
-        *   `exclude_patterns`: The list of file patterns to exclude.
-        *   `max_file_size`: The maximum size limit for files.
-        *   `github_token`: Your GitHub token (if using a private repo or need higher rate limits).
-    *   **Derives Project Name:** If you didn't provide a `--name` via the CLI, `prep` will try to figure out a sensible default name from the repo URL or directory path and store it in `shared["project_name"]`.
-    *   **Prepares Data for `exec`:** It collects these inputs into a dictionary that it returns. This dictionary will be passed to the `exec` method.
+
+    - **Reads Inputs:** This method reads the necessary configuration from the `shared` dictionary. This includes:
+      - `repo_url`: The GitHub URL (if provided).
+      - `local_dir`: The local directory path (if provided).
+      - `include_patterns`: The list of file patterns to include.
+      - `exclude_patterns`: The list of file patterns to exclude.
+      - `max_file_size`: The maximum size limit for files.
+      - `github_token`: Your GitHub token (if using a private repo or need higher rate limits).
+    - **Derives Project Name:** If you didn't provide a `--name` via the CLI, `prep` will try to figure out a sensible default name from the repo URL or directory path and store it in `shared["project_name"]`.
+    - **Prepares Data for `exec`:** It collects these inputs into a dictionary that it returns. This dictionary will be passed to the `exec` method.
 
     ```python
     # Simplified from nodes.py (FetchRepo)
@@ -72,15 +74,17 @@ Like all nodes in PocketFlow, `FetchRepo` has `prep`, `exec`, and `post` methods
             }
         # ... exec and post methods ...
     ```
-    *Explanation:* The `prep` method acts like setting up the librarian with your specific research request details: "Go to *this* library/folder, look for *these* types of documents, but *ignore* those, and only bring back things smaller than *this*."
+
+    _Explanation:_ The `prep` method acts like setting up the librarian with your specific research request details: "Go to _this_ library/folder, look for _these_ types of documents, but _ignore_ those, and only bring back things smaller than _this_."
 
 2.  **`exec(self, prep_res)`:**
-    *   **Performs Crawling:** This is where the main work happens. Based on whether `repo_url` or `local_dir` was provided, it calls the appropriate helper function:
-        *   `crawl_github_files()` if given a `--repo` URL. This function uses the GitHub API or git clone to fetch file contents.
-        *   `crawl_local_files()` if given a `--dir` path. This function walks the local file system.
-    *   **Applies Filters/Limits:** These helper functions are responsible for implementing the include/exclude patterns and the `max_file_size` check during traversal. For local directories, `crawl_local_files` also respects `.gitignore` files by default, which is a standard way developers specify files/folders to ignore in a project.
-    *   **Handles Errors:** If no files are found (e.g., wrong path, empty repo), it raises an error to stop the pipeline early.
-    *   **Returns File List:** It returns a list of tuples, where each tuple is `(file_path, file_content)`.
+
+    - **Performs Crawling:** This is where the main work happens. Based on whether `repo_url` or `local_dir` was provided, it calls the appropriate helper function:
+      - `crawl_github_files()` if given a `--repo` URL. This function uses the GitHub API or git clone to fetch file contents.
+      - `crawl_local_files()` if given a `--dir` path. This function walks the local file system.
+    - **Applies Filters/Limits:** These helper functions are responsible for implementing the include/exclude patterns and the `max_file_size` check during traversal. For local directories, `crawl_local_files` also respects `.gitignore` files by default, which is a standard way developers specify files/folders to ignore in a project.
+    - **Handles Errors:** If no files are found (e.g., wrong path, empty repo), it raises an error to stop the pipeline early.
+    - **Returns File List:** It returns a list of tuples, where each tuple is `(file_path, file_content)`.
 
     ```python
     # Simplified from nodes.py (FetchRepo)
@@ -132,10 +136,12 @@ Like all nodes in PocketFlow, `FetchRepo` has `prep`, `exec`, and `post` methods
 
         return True # Included and not excluded
     ```
-    *Explanation:* The `exec` method is the librarian actually going and getting the books. It uses specialized tools (`crawl_github_files` or `crawl_local_files`) to handle the different sources, checks each potential document against your criteria (filters, size), and builds the final pile of acceptable documents. The simplified `should_include_file` shows how it uses the patterns read from `shared` to make decisions about individual files.
+
+    _Explanation:_ The `exec` method is the librarian actually going and getting the books. It uses specialized tools (`crawl_github_files` or `crawl_local_files`) to handle the different sources, checks each potential document against your criteria (filters, size), and builds the final pile of acceptable documents. The simplified `should_include_file` shows how it uses the patterns read from `shared` to make decisions about individual files.
 
 3.  **`post(self, shared, prep_res, exec_res)`:**
-    *   **Writes Output to `shared`:** The list of files returned by the `exec` method (`exec_res`) is now ready. The `post` method takes this list and stores it in the `shared` dictionary under the key `"files"`. This makes the list of files available for all subsequent nodes in the pipeline.
+
+    - **Writes Output to `shared`:** The list of files returned by the `exec` method (`exec_res`) is now ready. The `post` method takes this list and stores it in the `shared` dictionary under the key `"files"`. This makes the list of files available for all subsequent nodes in the pipeline.
 
     ```python
     # Simplified from nodes.py (FetchRepo)
@@ -166,7 +172,8 @@ Like all nodes in PocketFlow, `FetchRepo` has `prep`, `exec`, and `post` methods
         # }
 
     ```
-    *Explanation:* The `post` method is the librarian placing the stack of gathered documents onto the central work table (the `shared` dictionary) labeled "Raw Files". Now, anyone else on the team can come to the table and pick up the "Raw Files" stack to start their work.
+
+    _Explanation:_ The `post` method is the librarian placing the stack of gathered documents onto the central work table (the `shared` dictionary) labeled "Raw Files". Now, anyone else on the team can come to the table and pick up the "Raw Files" stack to start their work.
 
 Here's a sequence diagram illustrating the `FetchRepo` process and its interaction with `shared`:
 
@@ -225,4 +232,3 @@ Now that we have the raw source code collected and stored in `shared["files"]`, 
 ---
 
 <sub><sup>Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge).</sup></sub> <sub><sup>**References**: [[1]](https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge/blob/86b22475977019d4147523aa0a1c8049625db5e0/nodes.py), [[2]](https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge/blob/86b22475977019d4147523aa0a1c8049625db5e0/utils/crawl_github_files.py), [[3]](https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge/blob/86b22475977019d4147523aa0a1c8049625db5e0/utils/crawl_local_files.py)</sup></sub>
-
