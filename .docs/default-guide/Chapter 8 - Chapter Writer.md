@@ -123,47 +123,49 @@ Let's dive into the `WriteChapters` node in `nodes.py`. As a `BatchNode`, it has
     _Explanation:_ `prep` here acts like the writing project manager. It gets the overall plan (order, concepts) and all the research (files). It sets up a place to keep notes on chapters as they are finished (`self.chapters_written_so_far`). Then, it breaks the big task ("write all chapters") into smaller, individual tasks ("write chapter 1", "write chapter 2", etc.), preparing a detailed packet of info for each one. This list of packets is what `pocketflow` will feed to the `exec` method one by one. It also pre-calculates filenames for linking.
 
 2.  **`exec(self, item)`:**
-    * **Runs for Each Chapter:** This method is executed once for *each* dictionary ("item") returned by `prep`.
-    * **Accesses Item Data:** Unpacks the details for the current chapter from the `item` dictionary (chapter number, abstraction details, file content map, project name, full chapter list, prev/next chapter info, language, cache flag).
-    _ **Adds Previous Chapters Context:** Crucially, it gets the summary of chapters already written from the instance variable `self.chapters_written_so_far`. This is the mechanism by which the AI knows what's been covered.
-    _ **Constructs the Prompt:** Builds a very detailed prompt for the LLM, incorporating all the information from the `item`, the `previous_chapters_summary`, and the specific instructions for content, style, and formatting. It includes the current chapter's name and number, its description, the full tutorial structure, the previous chapter context, relevant code snippets, and all the specific formatting rules (Markdown links, code blocks, Mermaid, analogies, tone). The prompt is quite verbose to guide the LLM precisely.
-    * **Calls the LLM:** Sends the prompt to the AI using `call_llm`. The `use_cache` flag is checked here, but importantly, for a `BatchNode`, caching is often only enabled for the *first* attempt at a batch item (`self.cur_retry == 0`). Retries will typically regenerate the content without caching to get a potentially better result.
-    * **Basic Validation/Cleanup:** After getting the raw Markdown response from the LLM, it performs minimal checks or cleanups, such as ensuring a main heading is present and formatted correctly.
-    * **Updates Context:** **Before returning**, it adds the generated Markdown content for *this* chapter to the `self.chapters_written_so_far` list. This way, when `pocketflow` calls `exec` for the *next* chapter in the batch, the context of *this* chapter will be available.
-    * **Returns Chapter Content:** Returns the generated Markdown string for the current chapter.
 
-        ```python
-        # Simplified from nodes.py (WriteChapters.exec)
-        # ... prep method ...
-        def exec(self, item):
-            # Unpack item data for the current chapter
-            abstraction_name = item["abstraction_details"]["name"] # Potentially translated
-            abstraction_description = item["abstraction_details"]["description"] # Potentially translated
-            chapter_num = item["chapter_num"]
-            project_name = item["project_name"]
-            language = item["language"]
-            use_cache = item["use_cache"] # Read use_cache flag
+    - **Runs for Each Chapter:** This method is executed once for _each_ dictionary ("item") returned by `prep`.
+    - **Accesses Item Data:** Unpacks the details for the current chapter from the `item` dictionary (chapter number, abstraction details, file content map, project name, full chapter list, prev/next chapter info, language, cache flag).
+      _ **Adds Previous Chapters Context:** Crucially, it gets the summary of chapters already written from the instance variable `self.chapters_written_so_far`. This is the mechanism by which the AI knows what's been covered.
+      _ **Constructs the Prompt:** Builds a very detailed prompt for the LLM, incorporating all the information from the `item`, the `previous_chapters_summary`, and the specific instructions for content, style, and formatting. It includes the current chapter's name and number, its description, the full tutorial structure, the previous chapter context, relevant code snippets, and all the specific formatting rules (Markdown links, code blocks, Mermaid, analogies, tone). The prompt is quite verbose to guide the LLM precisely.
+    - **Calls the LLM:** Sends the prompt to the AI using `call_llm`. The `use_cache` flag is checked here, but importantly, for a `BatchNode`, caching is often only enabled for the _first_ attempt at a batch item (`self.cur_retry == 0`). Retries will typically regenerate the content without caching to get a potentially better result.
+    - **Basic Validation/Cleanup:** After getting the raw Markdown response from the LLM, it performs minimal checks or cleanups, such as ensuring a main heading is present and formatted correctly.
+    - **Updates Context:** **Before returning**, it adds the generated Markdown content for _this_ chapter to the `self.chapters_written_so_far` list. This way, when `pocketflow` calls `exec` for the _next_ chapter in the batch, the context of _this_ chapter will be available.
+    - **Returns Chapter Content:** Returns the generated Markdown string for the current chapter.
 
-            print(f"Writing chapter {chapter_num} for: {abstraction_name} using LLM...")
+      ```python
+      # Simplified from nodes.py (WriteChapters.exec)
+      # ... prep method ...
+      def exec(self, item):
+          # Unpack item data for the current chapter
+          abstraction_name = item["abstraction_details"]["name"] # Potentially translated
+          abstraction_description = item["abstraction_details"]["description"] # Potentially translated
+          chapter_num = item["chapter_num"]
+          project_name = item["project_name"]
+          language = item["language"]
+          use_cache = item["use_cache"] # Read use_cache flag
 
-            # Get content for this chapter's relevant files
-            file_context_str = "\n\n".join(
-                f"--- File: {idx_path.split('# ')[1] if '# ' in idx_path else idx_path} ---\n{content}"
-                for idx_path, content in item["related_files_content_map"].items()
-            )
+          print(f"Writing chapter {chapter_num} for: {abstraction_name} using LLM...")
 
-            # Get summary of chapters written *before* this one from the instance variable
-            previous_chapters_summary = "\n---\n".join(self.chapters_written_so_far)
+          # Get content for this chapter's relevant files
+          file_context_str = "\n\n".join(
+              f"--- File: {idx_path.split('# ')[1] if '# ' in idx_path else idx_path} ---\n{content}"
+              for idx_path, content in item["related_files_content_map"].items()
+          )
 
-            # --- Construct the detailed prompt (simplified for illustration) ---
-            # This prompt includes:
-            # - Chapter name, number, and description
-            # - Full tutorial structure (for linking)
-            # - Previous chapters summary (for context)
-            # - Relevant file snippets
-            # - Detailed instructions on tone, style, structure, formatting (Markdown, Mermaid, links, code blocks)
-            # - Language instructions
-            prompt = f"""
+          # Get summary of chapters written *before* this one from the instance variable
+          previous_chapters_summary = "\n---\n".join(self.chapters_written_so_far)
+
+          # --- Construct the detailed prompt (simplified for illustration) ---
+          # This prompt includes:
+          # - Chapter name, number, and description
+          # - Full tutorial structure (for linking)
+          # - Previous chapters summary (for context)
+          # - Relevant file snippets
+          # - Detailed instructions on tone, style, structure, formatting (Markdown, Mermaid, links, code blocks)
+          # - Language instructions
+          prompt = f"""
+      ```
 
     {f'IMPORTANT: Write this ENTIRE chapter in **{language.capitalize()}**.' if language.lower() != 'english' else ''}
     Write a very beginner-friendly tutorial chapter (in Markdown format) for the project `{project_name}` about the concept: "{abstraction_name}". This is Chapter {chapter_num}.

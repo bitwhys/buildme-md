@@ -16,6 +16,7 @@ const buttonVariants = tv({
   ],
   variants: {
     variant: {
+      // TODO: use btnSolid  + btnColors['dark'] from button-utils.ts
       primary: [
         // border
         "border-transparent",
@@ -29,6 +30,7 @@ const buttonVariants = tv({
         "disabled:bg-blue-300 disabled:text-white",
         "dark:disabled:bg-blue-800 dark:disabled:text-blue-400",
       ],
+      // TODO: use btnOutline from button-utils.ts
       secondary: [
         // border
         "border-gray-300 dark:border-gray-800",
@@ -42,6 +44,7 @@ const buttonVariants = tv({
         "disabled:text-gray-400",
         "dark:disabled:text-gray-600",
       ],
+      // What Shadcn calls secondary/muted - TODO: use btnSolid + a modified (lighter) version of btnColors['zinc']
       light: [
         // base
         "shadow-none",
@@ -57,6 +60,7 @@ const buttonVariants = tv({
         "disabled:bg-gray-100 disabled:text-gray-400",
         "dark:disabled:bg-gray-800 dark:disabled:text-gray-600",
       ],
+      // TODO: use btnGhost from button-utils.ts
       ghost: [
         // base
         "shadow-none",
@@ -70,7 +74,8 @@ const buttonVariants = tv({
         "disabled:text-gray-400",
         "dark:disabled:text-gray-600",
       ],
-      destructive: [
+      // TODO: use btnSolid + btnColors['red'] from button-utils.ts
+      danger: [
         // text color
         "text-white",
         // border
@@ -86,7 +91,7 @@ const buttonVariants = tv({
     },
   },
   defaultVariants: {
-    variant: "primary",
+    variant: "light",
   },
 })
 
