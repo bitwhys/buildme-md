@@ -28,14 +28,14 @@ export const Secondary: Story = {
     variant: "secondary",
   },
 }
-export const Light: Story = {
+export const Outline: Story = {
   args: {
-    variant: "light",
+    variant: "outline",
   },
 }
 export const Ghost: Story = {
   args: {
-    variant: "ghots",
+    variant: "ghost",
   },
 }
 export const Danger: Story = {
@@ -205,7 +205,7 @@ export const WithTrailingIcon: Story = {
     children: (
       <>
         Upgrade
-        <StarFourIcon weight="bold" />
+        <StarFourIcon data-slot="icon" weight="bold" />
       </>
     ),
   },
@@ -215,7 +215,7 @@ export const WithLeadingIcon: Story = {
   args: {
     children: (
       <>
-        <StarFourIcon weight="bold" />
+        <StarFourIcon weight="bold" data-slot="icon" />
         Upgrade
       </>
     ),

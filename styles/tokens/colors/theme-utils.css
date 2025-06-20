@@ -575,10 +575,10 @@
 
   /* Background State Colors */
   --color-canvas-hover: var(--bg-canvas); /* use for page backgrounds */
-  --color-surface-hover: var(--bg-surface); /* use as main (card..etc) content background */
-  --color-surface-secondary-hover: var(--bg-surface-secondary);
-  --color-surface-tertiary-hover: var(--bg-surface-tertiary);
-  --color-inverse-hover: var(--bg-inverse); /* use for dark mode or inverse elements */
+  --color-surface-hover: var(--bg-surface-hover); /* use as main (card..etc) content background */
+  --color-surface-secondary-hover: var(--bg-surface-secondary-hover);
+  --color-surface-tertiary-hover: var(--bg-surface-tertiary-hover);
+  --color-inverse-hover: var(--bg-inverse-hover); /* use for dark mode or inverse elements */
 
   /* Accent Background Colors */
   --color-accent-bold: var(--accent-9); /* use as main (card..etc) content background */
@@ -600,4 +600,13 @@
   --color-brd-muted: var(--brd-muted);
   --color-brd-control: var(--brd-control);
   --color-brd-ring: var(--brd-ring);
+}
+
+@theme inline {
+  --shadow-1: var(--shadows-1);
+  --shadow-2: var(--shadows-2);
+  --shadow-3: var(--shadows-3);
+  --shadow-4: var(--shadows-4);
+  --shadow-5: var(--shadows-5);
+  --shadow-6: var(--shadows-6);
 }

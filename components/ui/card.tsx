@@ -17,7 +17,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         ref={forwardedRef}
         className={cx(
           // base
-          "dark:shadow-black-a12 relative flex flex-col gap-6 rounded-2xl border py-6 shadow-sm dark:shadow-md",
+          "dark:shadow-black-a12 shadow-2 border-gray-5 relative flex flex-col gap-6 rounded-2xl border py-6 dark:shadow-md",
           // background color, TODO: use a gradient in dark mode
           "bg-surface text-cnt-primary",
           // border color

@@ -82,10 +82,10 @@
   /*--brd-inverse: #374151;*/
 
   /* Interactive States */
-  --state-hover-overlay: rgba(0, 0, 0, 0.05);
-  --state-pressed-overlay: rgba(0, 0, 0, 0.1);
-  --state-focus-ring: rgba(59, 130, 246, 0.5);
-  --state-disabled-opacity: 0.5;
+  --bg-surface-hover: var(--gray-4);
+  --bg-surface-pressed: var(--gray-5);
+  --bg-surface-focus-ring: rgba(59, 130, 246, 0.5);
+  --bg-surface-disabled: 0.5;
 
   /* ===== COMPONENT-SPECIFIC TOKENS ===== */
   --btn-font-size-xs: var(--text-xs);

@@ -3,6 +3,7 @@
 
 @import "./tokens/colors/color-tokens.css";
 @import "./tokens/colors/theme-vars.css";
+@import "./tokens/shadows.css";
 @import "./tokens/design-system.css";
 @import "./tokens/colors/theme-utils.css";
 
