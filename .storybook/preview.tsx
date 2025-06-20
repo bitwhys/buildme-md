@@ -1,7 +1,17 @@
+import { useEffect } from "react"
 import { withThemeByClassName } from "@storybook/addon-themes"
 import { Decorator, Preview } from "@storybook/nextjs-vite"
 
 import "@/styles/globals.css"
+
+import { Lexend } from "next/font/google"
+
+import { cx } from "@/lib/style-utils"
+
+const lexendSans = Lexend({
+  variable: "--font-lexend-sans",
+  subsets: ["latin"],
+})
 
 const preview: Preview = {
   parameters: {
@@ -24,9 +34,13 @@ const preview: Preview = {
 export default preview
 
 const withThemeProvider: Decorator = (Story, { parameters }) => {
+  useEffect(() => {
+    // Ensure the theme is set on the HTML element
+    document.documentElement.classList.add(lexendSans.variable)
+  }, [])
   const { accentColor = "plum", grayColor = "slate" } = parameters
   return (
-    <div className="creightit" data-accent-color={accentColor} data-gray-color={grayColor}>
+    <div data-accent-color={accentColor} data-gray-color={grayColor}>
       <Story />
     </div>
   )

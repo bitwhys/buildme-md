@@ -8,17 +8,18 @@ const buttonVariants = tv({
   base: [
     // Base styles
     "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-150",
+    // Focus styles
     "focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+    // Disabled styles
     "disabled:pointer-events-none disabled:opacity-50",
     // Default shadow
     "shadow-sm",
   ],
   variants: {
     variant: {
-      // Primary/Accent - Cyan
-      accent: [
-        "border border-transparent bg-cyan-500 text-white",
-        "hover:bg-cyan-600 active:bg-cyan-700",
+      primary: [
+        "bg-accent-bold text-accent-contrast border border-transparent",
+        "hover:bg-accent-hover active:bg-accent-pressed",
         "focus-visible:ring-cyan-500/50",
         "disabled:bg-cyan-300",
       ],
@@ -120,7 +121,7 @@ const buttonVariants = tv({
     },
   ],
   defaultVariants: {
-    variant: "secondary",
+    variant: "primary",
     size: "md",
     state: "default",
   },

@@ -1,7 +1,7 @@
 /* This file is for defining CSS variables within the tailwindcss @theme directive. */
 
 /* Base colors */
-@theme {
+@theme inline {
   /* Black Alpha */
   --color-black-a1: var(--black-a1);
   --color-black-a2: var(--black-a2);
@@ -383,7 +383,7 @@
 }
 
 /* Semantic colors */
-@theme {
+@theme inline {
   --color-debug: var(--debug);
   /* Accent */
   --color-accent-1: var(--accent-1);
@@ -554,4 +554,40 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+}
+
+@theme inline {
+  /* Content Colors */
+  --color-cnt-primary: var(--cnt-primary);
+  --color-cnt-secondary: var(--cnt-secondary);
+  --color-cnt-tertiary: var(--cnt-tertiary);
+  --color-cnt-quaternary: var(--cnt-quaternary);
+  --color-cnt-inverse: var(--cnt-inverse);
+  --color-cnt-disabled: var(--cnt-disabled);
+
+  /* Background Colors */
+  --color-canvas: var(--bg-canvas); /* use for page backgrounds */
+  --color-surface: var(--bg-surface); /* use as main (card..etc) content background */
+  --color-surface-secondary: var(--bg-surface-secondary);
+  --color-surface-tertiary: var(--bg-surface-tertiary);
+  --color-inverse: var(--bg-inverse); /* use for dark mode or inverse elements */
+  --color-overlay: var(--bg-overlay);
+
+  /* Background State Colors */
+  --color-canvas-hover: var(--bg-canvas); /* use for page backgrounds */
+  --color-surface-hover: var(--bg-surface); /* use as main (card..etc) content background */
+  --color-surface-secondary-hover: var(--bg-surface-secondary);
+  --color-surface-tertiary-hover: var(--bg-surface-tertiary);
+  --color-inverse-hover: var(--bg-inverse); /* use for dark mode or inverse elements */
+
+  /* Accent Background Colors */
+  --color-accent-bold: var(--accent-9); /* use as main (card..etc) content background */
+  --color-accent-soft: var(--accent-3);
+  --color-accent-alternative: var(--accent-4);
+
+  /* Border Colors */
+  --color-brd-default: var(--brd-default);
+  --color-brd-muted: var(--brd-muted);
+  --color-brd-control: var(--brd-control);
+  --color-brd-ring: var(--brd-ring);
 }

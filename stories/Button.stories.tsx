@@ -1,7 +1,9 @@
+import { StarFourIcon } from "@phosphor-icons/react"
 import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 import { fn } from "storybook/test"
 
 import { Button } from "@/components/ui/button-base"
+import { Card } from "@/components/ui/card"
 
 const meta = {
   title: "UI/Button",
@@ -42,12 +44,57 @@ export const Danger: Story = {
   },
 }
 
+export const Sizes: Story = {
+  render: (args) => (
+    <Card className="flex items-center gap-x-8">
+      <div className="flex flex-col items-center gap-y-2">
+        <span className="text-cnt-secondary text-sm font-semibold tracking-wider uppercase">
+          XS
+        </span>
+        <Button size="xs">Button</Button>
+      </div>
+      <div className="flex flex-col items-center gap-y-2">
+        <span className="text-cnt-secondary text-sm font-semibold tracking-wider uppercase">
+          sm
+        </span>
+        <Button size="sm">Button</Button>
+      </div>
+      <div className="flex flex-col items-center gap-y-2">
+        <span className="text-cnt-secondary text-sm font-semibold tracking-wider uppercase">
+          md
+        </span>
+        <Button size="md">Button</Button>
+      </div>
+      <div className="flex flex-col items-center gap-y-2">
+        <span className="text-cnt-secondary text-sm font-semibold tracking-wider uppercase">
+          lg
+        </span>
+        <Button size="lg">Button</Button>
+      </div>
+    </Card>
+  ),
+}
+
 export const WithTrailingIcon: Story = {
-  args: {},
+  args: {
+    children: (
+      <>
+        Upgrade
+        <StarFourIcon weight="bold" />
+      </>
+    ),
+  },
 }
 
 export const WithLeadingIcon: Story = {
-  args: {},
+  args: {
+    children: (
+      <>
+        <StarFourIcon weight="bold" />
+        Upgrade
+      </>
+    ),
+  },
 }
 
 export const WithDisabled: Story = {
