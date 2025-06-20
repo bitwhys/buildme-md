@@ -47,7 +47,7 @@ export const Danger: Story = {
 export const Sizes: Story = {
   render: (args) => (
     <div className="space-y-12">
-      <section className="space-y-2.5">
+      <section id="variant-primary" className="space-y-2.5">
         <h2 className="text-base font-semibold">Primary</h2>
         <Card className="">
           <CardContent className="flex items-center gap-x-8">
@@ -78,7 +78,47 @@ export const Sizes: Story = {
           </CardContent>
         </Card>
       </section>
-      <section className="space-y-2.5">
+      <section id="variant-accent" className="space-y-2.5">
+        <h2 className="text-base font-semibold">Accent</h2>
+        <Card className="">
+          <CardContent className="flex items-center gap-x-8">
+            <div className="flex flex-col items-center gap-y-2">
+              <span className="text-cnt-tertiary text-xs font-semibold tracking-wider uppercase">
+                XS
+              </span>
+              <Button size="xs" variant="accent">
+                Button
+              </Button>
+            </div>
+            <div className="flex flex-col items-center gap-y-2">
+              <span className="text-cnt-tertiary text-xs font-semibold tracking-wider uppercase">
+                sm
+              </span>
+              <Button size="sm" variant="accent">
+                Button
+              </Button>
+            </div>
+            <div className="flex flex-col items-center gap-y-2">
+              <span className="text-cnt-tertiary text-xs font-semibold tracking-wider uppercase">
+                md
+              </span>
+              <Button size="md" variant="accent">
+                Button
+              </Button>
+            </div>
+            <div className="flex flex-col items-center gap-y-2">
+              <span className="text-cnt-tertiary text-xs font-semibold tracking-wider uppercase">
+                lg
+              </span>
+              <Button size="lg" variant="accent">
+                Button
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section id="variant-secondary" className="space-y-2.5">
         <h2 className="text-base font-semibold">Secondary</h2>
         <Card className="">
           <CardContent className="flex items-center gap-x-8">
@@ -118,7 +158,7 @@ export const Sizes: Story = {
         </Card>
       </section>
 
-      <section className="space-y-2.5">
+      <section id="variant-outline" className="space-y-2.5">
         <h2 className="text-base font-semibold">Outline</h2>
         <Card className="">
           <CardContent className="flex items-center gap-x-8">
@@ -157,7 +197,7 @@ export const Sizes: Story = {
           </CardContent>
         </Card>
       </section>
-      <section className="space-y-2.5">
+      <section id="variant-ghost" className="space-y-2.5">
         <h2 className="text-base font-semibold">Ghost</h2>
         <Card className="">
           <CardContent className="flex items-center gap-x-8">
