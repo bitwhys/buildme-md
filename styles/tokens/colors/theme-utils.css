@@ -585,6 +585,16 @@
   --color-accent-soft: var(--accent-3);
   --color-accent-alternative: var(--accent-4);
 
+  /* Accent Hover State Colors */
+  --color-accent-bold-hover: var(--accent-10); /* use as main (card..etc) content background */
+  --color-accent-soft-hover: var(--accent-4);
+  --color-accent-alternative-hover: var(--accent-5);
+
+  /* Accent Hover State Colors */
+  --color-accent-bold-pressed: var(--accent-9); /* use as main (card..etc) content background */
+  --color-accent-soft-pressed: var(--accent-2);
+  --color-accent-alternative-pressed: var(--accent-3);
+
   /* Border Colors */
   --color-brd-default: var(--brd-default);
   --color-brd-muted: var(--brd-muted);

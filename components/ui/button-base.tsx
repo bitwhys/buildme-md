@@ -19,77 +19,52 @@ const buttonVariants = tv({
     variant: {
       primary: [
         "bg-accent-bold text-accent-contrast border border-transparent",
-        "hover:bg-accent-hover active:bg-accent-pressed",
+        "hover:bg-accent-bold-hover active:bg-accent-bold-pressed",
         "focus-visible:ring-cyan-500/50",
         "disabled:bg-cyan-300",
       ],
-      "accent-light": [
+      accent: [
         "border border-transparent bg-cyan-400 text-white",
         "hover:bg-cyan-500 active:bg-cyan-600",
         "focus-visible:ring-cyan-400/50",
         "disabled:bg-cyan-200",
       ],
-      "accent-dark": [
-        "border border-transparent bg-cyan-600 text-white",
-        "hover:bg-cyan-700 active:bg-cyan-800",
-        "focus-visible:ring-cyan-600/50",
-        "disabled:bg-cyan-400",
-      ],
-
-      // Danger/Red variants
-      danger: [
-        "border border-transparent bg-red-500 text-white",
-        "hover:bg-red-600 active:bg-red-700",
-        "focus-visible:ring-red-500/50",
-        "disabled:bg-red-300",
-      ],
-      "danger-light": [
-        "border border-transparent bg-red-400 text-white",
-        "hover:bg-red-500 active:bg-red-600",
-        "focus-visible:ring-red-400/50",
-        "disabled:bg-red-200",
-      ],
-      "danger-dark": [
-        "border border-transparent bg-red-600 text-white",
-        "hover:bg-red-700 active:bg-red-800",
-        "focus-visible:ring-red-600/50",
-        "disabled:bg-red-400",
-      ],
-
-      // Secondary/White variants
       secondary: [
         "border border-gray-300 bg-white text-gray-900",
         "hover:bg-gray-50 active:bg-gray-100",
         "focus-visible:ring-gray-500/50",
         "disabled:bg-gray-100 disabled:text-gray-400",
+        // dark mode styles
+        "dark:bg-gray-9 dark:border-white-a2 dark:text-gray-contrast",
       ],
-      muted: [
-        "border border-gray-300 bg-gray-50 text-gray-900",
-        "hover:bg-gray-100 active:bg-gray-200",
-        "focus-visible:ring-gray-500/50",
-        "disabled:bg-gray-25 disabled:text-gray-400",
-      ],
-
-      // Ghost variants
       ghost: [
         "border border-transparent bg-transparent text-gray-900",
         "hover:bg-gray-100 active:bg-gray-200",
         "focus-visible:ring-gray-500/50",
         "disabled:text-gray-400",
       ],
-      "ghost-light": [
-        "border border-transparent bg-gray-50/50 text-gray-900",
+      outline: [
+        "border border-gray-300 bg-gray-50 text-gray-900",
         "hover:bg-gray-100 active:bg-gray-200",
         "focus-visible:ring-gray-500/50",
-        "disabled:text-gray-400",
+        "disabled:bg-gray-25 disabled:text-gray-400",
       ],
-      "ghost-muted": [
-        "border border-transparent bg-gray-100/60 text-gray-900",
-        "hover:bg-gray-200 active:bg-gray-300",
-        "focus-visible:ring-gray-500/50",
-        "disabled:text-gray-400",
-      ],
+      // muted: [
+      //   "border border-gray-300 bg-gray-50 text-gray-900",
+      //   "hover:bg-gray-100 active:bg-gray-200",
+      //   "focus-visible:ring-gray-500/50",
+      //   "disabled:bg-gray-25 disabled:text-gray-400",
+      // ],
+      // Ghost variants
     },
+    // Danger/Red variants
+    danger: [
+      "border border-transparent bg-red-500 text-white",
+      "hover:bg-red-600 active:bg-red-700",
+      "focus-visible:ring-red-500/50",
+      "disabled:bg-red-300",
+    ],
+
     size: {
       xs: ["h-6 px-3 text-xs", "[&>svg]:size-3"],
       sm: ["h-8 px-4 text-sm", "[&>svg]:size-4"],

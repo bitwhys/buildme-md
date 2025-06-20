@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps) {
   return (
-    <html lang="en" className="creightit" data-accent-color="plum" data-gray-color="slate">
+    <html lang="en" className="creightit" data-accent-color="plum" data-gray-color="mauve">
       <body className={cx(geistMono.variable, lexendSans.variable, "antialiased")}>
         <ThemeProvider
           storageKey={site.STORAGE_KEY}

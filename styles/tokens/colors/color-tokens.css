@@ -3,6 +3,13 @@
 
 /* Since the order matters (?) first import the colors we want to use
   then import the theme variables. */
+@import "./palette/gray.css";
+@import "./palette/mauve.css";
+@import "./palette/slate.css";
+@import "./palette/sand.css";
+@import "./palette/sage.css";
+@import "./palette/olive.css";
+
 @import "./palette/amber.css";
 @import "./palette/brown.css";
 @import "./palette/crimson.css";
@@ -11,7 +18,6 @@
 @import "./palette/orange.css";
 @import "./palette/plum.css";
 @import "./palette/red.css";
-@import "./palette/slate.css";
 @import "./palette/sky.css";
 @import "./palette/teal.css";
 

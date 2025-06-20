@@ -36,7 +36,7 @@ export default preview
 const withThemeProvider: Decorator = (Story, { parameters }) => {
   useEffect(() => {
     // Ensure the theme is set on the HTML element
-    document.documentElement.classList.add(lexendSans.variable)
+    document.documentElement.classList.add(lexendSans.variable, "antialiased")
   }, [])
   const { accentColor = "plum", grayColor = "slate" } = parameters
   return (
